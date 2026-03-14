@@ -14,7 +14,7 @@ import {
 import {
   LogOut, Menu, X, Home, FileText, BarChart3, Zap, BookOpen,
   Settings, Shield, MessageSquare, ClipboardList, Scale,
-  ChevronLeft, ChevronRight, Bell, Search,
+  ChevronLeft, ChevronRight, Bell, Search, Database,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -39,6 +39,7 @@ export function DashboardLayout({ children, currentPage }: DashboardLayoutProps)
     { href: '/workflows', label: 'Workflows', icon: Zap, description: 'Automated pipelines' },
     { href: '/analysis', label: 'Analysis', icon: BarChart3, description: 'Charter & strategy' },
     { href: '/reference', label: 'Reference', icon: BookOpen, description: 'Legal library' },
+    ...(user?.role === 'admin' || user?.role === 'lawyer' ? [{ href: '/studio', label: 'CMS Studio', icon: Database, description: 'Content management' }] : []),
     ...(user?.role === 'admin' ? [{ href: '/admin', label: 'Admin', icon: Shield, description: 'System management' }] : []),
   ];
 
