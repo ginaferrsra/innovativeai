@@ -5,7 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Send, Upload, Brain, Scale, Shield, FileText, Search, AlertTriangle, Target, X, Paperclip, Bot, User, Sparkles, ChevronDown } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Send, Upload, Brain, Scale, Shield, FileText, Search, AlertTriangle, Target, X, Paperclip,
+  Bot, User, Sparkles, ChevronDown, Crosshair, Gavel, Clock, BookOpen, FileCheck,
+  Layers, PanelRightOpen, PanelRightClose, Copy, CheckCircle2, Wand2, ListChecks,
+} from 'lucide-react';
 
 interface ChatMessage {
   id: string;
@@ -33,6 +38,21 @@ const AGENT_CONFIGS = [
   { id: 'strategy_advisor', name: 'Strategy Advisor', icon: Target, color: 'text-emerald-600 bg-emerald-50', speciality: 'Defense tactics, trial strategy' },
   { id: 'risk_assessor', name: 'Risk Assessor', icon: AlertTriangle, color: 'text-amber-600 bg-amber-50', speciality: 'Probability, exposure analysis' },
   { id: 'document_processor', name: 'Document Analyst', icon: FileText, color: 'text-indigo-600 bg-indigo-50', speciality: 'Entity extraction, summarization' },
+  { id: 'disclosure_auditor', name: 'Disclosure Auditor', icon: FileCheck, color: 'text-purple-600 bg-purple-50', speciality: 'Stinchcombe audit, missing evidence' },
+  { id: 'cross_exam_engine', name: 'Cross-Exam Engine', icon: Gavel, color: 'text-orange-600 bg-orange-50', speciality: 'Impeachment, leading questions' },
+  { id: 'grant_test', name: 'Grant Test Automator', icon: Scale, color: 'text-teal-600 bg-teal-50', speciality: 's.24(2) exclusion analysis' },
+];
+
+// Integrated tools accessible from the chat
+const INTEGRATED_TOOLS = [
+  { id: 'firearm_classifier', name: 'Firearm Classifier', icon: Crosshair, description: 'Classify weapon as non-restricted, restricted, or prohibited', command: '/classify' },
+  { id: 'disclosure_audit', name: 'Disclosure Audit', icon: FileCheck, description: 'Run Stinchcombe checklist against your disclosure', command: '/audit' },
+  { id: 'grant_test', name: 'Grant Test', icon: Scale, description: 'Run R. v. Grant 3-part test for evidence exclusion', command: '/grant' },
+  { id: 'charter_scan', name: 'Charter Breach Scan', icon: Shield, description: 'Deep scan documents for Charter violations', command: '/charter' },
+  { id: 'cross_exam', name: 'Cross-Exam Builder', icon: Gavel, description: 'Generate leading questions from officer notes', command: '/crossexam' },
+  { id: 'citation_gen', name: 'Citation Generator', icon: BookOpen, description: 'Generate McGill or Bluebook citations', command: '/cite' },
+  { id: 'timeline_audit', name: 'Timeline Auditor', icon: Clock, description: 'Detect gaps between arrest and rights advisement', command: '/timeline' },
+  { id: 'factum_draft', name: 'Factum Drafter', icon: FileText, description: 'Generate factum sections with proper formatting', command: '/factum' },
 ];
 
 const AGENT_RESPONSES: Record<string, (query: string) => string> = {
@@ -62,6 +82,15 @@ const AGENT_RESPONSES: Record<string, (query: string) => string> = {
   document_processor: (q) => {
     return `**Document Analysis Summary:**\n\nI've processed the available context and identified the following:\n\n**Extracted Entities**:\n- Parties: Identified from document headers and body text\n- Dates: Key timeline events mapped chronologically\n- Legal Concepts: Charter sections, Criminal Code provisions, procedural references\n- Financial References: Amounts, penalties, and cost estimates\n\n**Document Classification**:\n- Type: Legal correspondence / Court filing / Disclosure material\n- Jurisdiction: Canadian federal/provincial\n- Relevance: High priority for case analysis\n\n**Normalization Complete**:\n- All data structured and indexed for cross-reference\n- Timeline discrepancies flagged for review\n- Missing disclosure items identified\n\nUpload specific documents for detailed entity extraction and Charter breach scanning.`;
   },
+  disclosure_auditor: (q) => {
+    return `**Stinchcombe Disclosure Audit Report:**\n\nBased on *R. v. Stinchcombe* [1991] 3 SCR 326, I've audited your disclosure package:\n\n**Audit Results:**\n| Category | Items Required | Items Present | Status |\n|----------|---------------|---------------|--------|\n| Arrest Records | 6 | 4 | Missing |\n| Search Documentation | 4 | 2 | Missing |\n| Evidence Reports | 6 | 5 | Partial |\n| Witness Statements | 3 | 3 | Complete |\n| Background Checks | 3 | 2 | Missing |\n\n**Critical Missing Items:**\n1. Body-Worn Camera Footage (BWC)\n2. Information to Obtain (ITO)\n3. Firearm Examination Report\n4. Chain of Custody Records\n\n**Recommendation**: Draft formal disclosure request letter immediately. Missing BWC footage is critical for any Charter motion.\n\n**Draft Letter Generated**: Would you like me to draft the *Stinchcombe* demand letter?`;
+  },
+  cross_exam_engine: (q) => {
+    return `**Cross-Examination Script Generated:**\n\nUsing the Pozner & Dodd "Chapter Method," I've prepared leading questions:\n\n**Chapter 1: Establishing the Timeline**\n1. Officer, you were dispatched to 123 Main Street at approximately 9:45 PM, correct?\n2. You arrived at the location at 9:52 PM?\n3. The accused was already in handcuffs when you arrived?\n4. Your notes indicate the arrest occurred at 9:48 PM?\n5. That's a 4-minute gap between arrest and your arrival?\n\n**Chapter 2: Charter Rights Administration**\n6. You did not personally read the accused their rights?\n7. Your notes do not record when the caution was given?\n8. The accused was questioned before speaking to counsel?\n9. No duty counsel contact was facilitated on scene?\n\n**Chapter 3: Search Procedure**\n10. You searched the vehicle without a warrant?\n11. The accused did not consent to the search in writing?\n12. Your notes describe the search as "incident to arrest"?\n\n**Impeachment Triggers Flagged**: 3 potential inconsistencies between notes and body-cam timestamps identified.`;
+  },
+  grant_test: (q) => {
+    return `**R. v. Grant [2009] SCC 32 Analysis:**\n\nRunning the three-part test for s.24(2) evidence exclusion:\n\n**Branch 1: Seriousness of Charter-Infringing Conduct**\n| Factor | Assessment | Score |\n|--------|------------|-------|\n| Good Faith | Low - Procedural shortcuts evident | 7/10 |\n| Pattern of Abuse | Moderate - Similar prior conduct | 6/10 |\n| Urgency/Necessity | Low - No exigent circumstances | 8/10 |\n**Branch 1 Score: 7.0/10** (Favors Exclusion)\n\n**Branch 2: Impact on Charter-Protected Interests**\n| Factor | Assessment | Score |\n|--------|------------|-------|\n| Privacy Intrusion | High - Vehicle search without warrant | 8/10 |\n| Bodily Integrity | Moderate - Detention extended | 5/10 |\n| Human Dignity | Moderate - Public arrest | 6/10 |\n**Branch 2 Score: 6.3/10** (Moderately Favors Exclusion)\n\n**Branch 3: Society's Interest in Adjudication**\n| Factor | Assessment | Score |\n|--------|------------|-------|\n| Evidence Reliability | High - Physical evidence | 3/10 |\n| Charge Severity | High - Weapon offense | 4/10 |\n| Essential to Crown | High - Only evidence | 3/10 |\n**Branch 3 Score: 3.3/10** (Favors Admission)\n\n**Overall Exclusion Probability: 68%**\n**Recommendation**: File s.24(2) motion - strong case for exclusion under Branches 1 and 2.`;
+  },
 };
 
 export function AILegalChat() {
@@ -69,11 +98,32 @@ export function AILegalChat() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedDocs, setUploadedDocs] = useState<UploadedDocument[]>([]);
-  const [activeAgents, setActiveAgents] = useState<string[]>(['charter_analyzer', 'legal_researcher', 'strategy_advisor']);
+  const [activeAgents, setActiveAgents] = useState<string[]>(['charter_analyzer', 'legal_researcher', 'strategy_advisor', 'disclosure_auditor']);
   const [sessionStarted, setSessionStarted] = useState(false);
   const [agentMode, setAgentMode] = useState<'single' | 'multi' | 'collaborative'>('collaborative');
+  const [toolsPanelOpen, setToolsPanelOpen] = useState(false);
+  const [activeTool, setActiveTool] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle tool commands
+  const executeToolCommand = useCallback((toolId: string) => {
+    const tool = INTEGRATED_TOOLS.find(t => t.id === toolId);
+    if (!tool) return;
+
+    setSessionStarted(true);
+    setActiveTool(toolId);
+
+    // Add system message about tool activation
+    const sysMsg: ChatMessage = {
+      id: `tool-${Date.now()}`,
+      role: 'assistant',
+      content: `**Tool Activated: ${tool.name}**\n\n${tool.description}\n\nYou can now ask questions or provide data for this tool. Type your query or paste relevant text.`,
+      timestamp: new Date(),
+      agentName: 'System',
+    };
+    setMessages((prev) => [...prev, sysMsg]);
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -114,6 +164,26 @@ export function AILegalChat() {
     setSessionStarted(true);
     setIsLoading(true);
 
+    // Check for slash commands
+    const trimmed = inputValue.trim();
+    if (trimmed.startsWith('/')) {
+      const tool = INTEGRATED_TOOLS.find(t => t.command === trimmed.split(' ')[0]);
+      if (tool) {
+        setActiveTool(tool.id);
+        const sysMsg: ChatMessage = {
+          id: `cmd-${Date.now()}`,
+          role: 'assistant',
+          content: `**${tool.name} Activated**\n\n${tool.description}\n\nProvide the data or context for analysis, or ask a specific question.`,
+          timestamp: new Date(),
+          agentName: 'Command',
+        };
+        setMessages((prev) => [...prev, sysMsg]);
+        setInputValue('');
+        setIsLoading(false);
+        return;
+      }
+    }
+
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
       role: 'user',
@@ -124,8 +194,26 @@ export function AILegalChat() {
     const query = inputValue;
     setInputValue('');
 
-    // Generate agent responses with staggered timing
-    const agentsToUse = agentMode === 'single' ? [activeAgents[0]] : activeAgents;
+    // If a specific tool is active, prioritize relevant agents
+    let agentsToUse = agentMode === 'single' ? [activeAgents[0]] : activeAgents;
+
+    // Route to specialized agents based on active tool
+    if (activeTool) {
+      const toolToAgentMap: Record<string, string[]> = {
+        'charter_scan': ['charter_analyzer'],
+        'disclosure_audit': ['disclosure_auditor', 'document_processor'],
+        'grant_test': ['grant_test', 'charter_analyzer'],
+        'cross_exam': ['cross_exam_engine', 'strategy_advisor'],
+        'timeline_audit': ['disclosure_auditor', 'charter_analyzer'],
+        'factum_draft': ['strategy_advisor', 'legal_researcher'],
+        'firearm_classifier': ['legal_researcher'],
+        'citation_gen': ['legal_researcher'],
+      };
+      const specializedAgents = toolToAgentMap[activeTool] || [];
+      if (specializedAgents.length > 0) {
+        agentsToUse = specializedAgents.filter(a => AGENT_CONFIGS.some(c => c.id === a));
+      }
+    }
 
     for (let i = 0; i < agentsToUse.length; i++) {
       const agentId = agentsToUse[i];
@@ -316,7 +404,9 @@ export function AILegalChat() {
 
   // Active Chat
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex bg-background">
+      {/* Main Chat Area */}
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${toolsPanelOpen ? 'mr-72' : ''}`}>
       {/* Chat Header */}
       <div className="border-b border-border/60 px-4 py-3 bg-card/50 backdrop-blur-sm flex-shrink-0">
         <div className="flex items-center justify-between">
@@ -343,14 +433,25 @@ export function AILegalChat() {
                 ) : null;
               })}
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-xs h-7"
-              onClick={() => { setSessionStarted(false); setMessages([]); }}
-            >
-              New Chat
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs h-7 gap-1"
+                onClick={() => setToolsPanelOpen(!toolsPanelOpen)}
+              >
+                {toolsPanelOpen ? <PanelRightClose className="w-3 h-3" /> : <PanelRightOpen className="w-3 h-3" />}
+                Tools
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs h-7"
+                onClick={() => { setSessionStarted(false); setMessages([]); setActiveTool(null); }}
+              >
+                New Chat
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -363,7 +464,7 @@ export function AILegalChat() {
               <Scale className="w-10 h-10 text-muted-foreground/50 mx-auto" />
               <p className="text-sm text-muted-foreground">Ask about your case, upload disclosure, or request Charter analysis</p>
               <div className="flex flex-wrap justify-center gap-2">
-                {['Analyze my disclosure for Charter breaches', 'What are my defense options?', 'Research s.8 search and seizure law'].map((suggestion) => (
+                {['/audit - Run disclosure audit', '/grant - Analyze s.24(2) exclusion', '/charter - Scan for breaches', 'Build my defense strategy'].map((suggestion) => (
                   <button
                     key={suggestion}
                     type="button"
@@ -468,7 +569,7 @@ export function AILegalChat() {
             accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg"
           />
           <Input
-            placeholder="Ask the AI agents about your case..."
+            placeholder="Ask anything or type / for commands..."
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
@@ -483,6 +584,131 @@ export function AILegalChat() {
           >
             <Send className="w-4 h-4" />
           </Button>
+        </div>
+      </div>
+      </div>
+
+      {/* Tools Panel - Octopus Hub */}
+      <div className={`fixed top-0 right-0 h-full w-72 bg-card border-l border-border shadow-xl z-50 transition-transform duration-300 ${toolsPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="h-full flex flex-col">
+          {/* Panel Header */}
+          <div className="p-4 border-b border-border">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Layers className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold">Legal Tools Hub</h3>
+                  <p className="text-[10px] text-muted-foreground">Octopus Pipeline</p>
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setToolsPanelOpen(false)}>
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Tool Categories */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-3">
+            {/* Analysis Tools */}
+            <div>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Analysis Tools</p>
+              <div className="space-y-1.5">
+                {INTEGRATED_TOOLS.filter(t => ['charter_scan', 'grant_test', 'disclosure_audit', 'timeline_audit'].includes(t.id)).map((tool) => (
+                  <button
+                    key={tool.id}
+                    type="button"
+                    onClick={() => executeToolCommand(tool.id)}
+                    className={`w-full flex items-center gap-2.5 p-2.5 rounded-lg text-left transition-all duration-200 group ${
+                      activeTool === tool.id ? 'bg-primary/10 border border-primary/30' : 'hover:bg-secondary/60 border border-transparent'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 ${activeTool === tool.id ? 'bg-primary text-primary-foreground' : 'bg-secondary/80 text-muted-foreground group-hover:text-foreground'}`}>
+                      <tool.icon className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium truncate">{tool.name}</p>
+                      <p className="text-[10px] text-muted-foreground truncate">{tool.command}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Drafting Tools */}
+            <div>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Drafting Tools</p>
+              <div className="space-y-1.5">
+                {INTEGRATED_TOOLS.filter(t => ['cross_exam', 'factum_draft', 'citation_gen'].includes(t.id)).map((tool) => (
+                  <button
+                    key={tool.id}
+                    type="button"
+                    onClick={() => executeToolCommand(tool.id)}
+                    className={`w-full flex items-center gap-2.5 p-2.5 rounded-lg text-left transition-all duration-200 group ${
+                      activeTool === tool.id ? 'bg-primary/10 border border-primary/30' : 'hover:bg-secondary/60 border border-transparent'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 ${activeTool === tool.id ? 'bg-primary text-primary-foreground' : 'bg-secondary/80 text-muted-foreground group-hover:text-foreground'}`}>
+                      <tool.icon className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium truncate">{tool.name}</p>
+                      <p className="text-[10px] text-muted-foreground truncate">{tool.command}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Compliance Tools */}
+            <div>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Compliance</p>
+              <div className="space-y-1.5">
+                {INTEGRATED_TOOLS.filter(t => ['firearm_classifier'].includes(t.id)).map((tool) => (
+                  <button
+                    key={tool.id}
+                    type="button"
+                    onClick={() => executeToolCommand(tool.id)}
+                    className={`w-full flex items-center gap-2.5 p-2.5 rounded-lg text-left transition-all duration-200 group ${
+                      activeTool === tool.id ? 'bg-primary/10 border border-primary/30' : 'hover:bg-secondary/60 border border-transparent'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 ${activeTool === tool.id ? 'bg-primary text-primary-foreground' : 'bg-secondary/80 text-muted-foreground group-hover:text-foreground'}`}>
+                      <tool.icon className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium truncate">{tool.name}</p>
+                      <p className="text-[10px] text-muted-foreground truncate">{tool.command}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Active Agents */}
+            <div>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Active Agents ({activeAgents.length})</p>
+              <div className="space-y-1">
+                {AGENT_CONFIGS.filter(a => activeAgents.includes(a.id)).map((agent) => (
+                  <div key={agent.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-secondary/40">
+                    <div className={`w-5 h-5 rounded flex items-center justify-center ${agent.color}`}>
+                      <agent.icon className="w-3 h-3" />
+                    </div>
+                    <span className="text-[11px] font-medium truncate">{agent.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Panel Footer */}
+          <div className="p-3 border-t border-border bg-secondary/20">
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+              <Wand2 className="w-3 h-3" />
+              <span>Type / for commands or click a tool</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
