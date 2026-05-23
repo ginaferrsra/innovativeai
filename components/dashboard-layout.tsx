@@ -15,6 +15,7 @@ import {
   LogOut, Menu, X, Home, FileText, BarChart3, Zap, BookOpen,
   Settings, Shield, MessageSquare, ClipboardList, Scale,
   ChevronLeft, ChevronRight, Bell, Search, Database,
+  Calculator, GraduationCap, Building2, Gavel,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -36,9 +37,11 @@ export function DashboardLayout({ children, currentPage }: DashboardLayoutProps)
     { href: '/documents', label: 'Documents', icon: FileText, description: 'Upload & process' },
     { href: '/chat', label: 'AI Chat', icon: MessageSquare, description: 'Multi-agent legal AI' },
     { href: '/forms', label: 'Court Forms', icon: ClipboardList, description: 'Templates & intake' },
-    { href: '/workflows', label: 'Workflows', icon: Zap, description: 'Automated pipelines' },
+    { href: '/tools', label: 'Tools', icon: Calculator, description: 'Calculators & checklists' },
     { href: '/analysis', label: 'Analysis', icon: BarChart3, description: 'Charter & strategy' },
+    { href: '/learn', label: 'Learn', icon: GraduationCap, description: 'Tutorials & guides' },
     { href: '/reference', label: 'Reference', icon: BookOpen, description: 'Legal library' },
+    { href: '/directory', label: 'Directory', icon: Building2, description: 'Court contacts' },
     ...(user?.role === 'admin' || user?.role === 'lawyer' ? [{ href: '/studio', label: 'CMS Studio', icon: Database, description: 'Content management' }] : []),
     ...(user?.role === 'admin' ? [{ href: '/admin', label: 'Admin', icon: Shield, description: 'System management' }] : []),
   ];
